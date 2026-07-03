@@ -1,10 +1,22 @@
 package com.example.compass.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public class RegisterRequest {
+	@NotBlank(message="First name is required")
 	private String firstName;
+
+	@NotBlank(message="Last name is required")
 	private String lastName;
+
+	@NotBlank(message="Email is required")
+	@Email(message="Enter a valid email")
 	private String email;
+
+	@Size(min=6,message="password must be at least 6 characters")
+	@NotBlank(message="Password is required")
 	private String password;
 	public RegisterRequest(String firstName, String lastName, String email, String password) {
 		super();
@@ -40,7 +52,7 @@ public class RegisterRequest {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
-	
-	
+
+
+
 }

@@ -18,18 +18,18 @@ public class UserServiceImpl implements UserService{
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
-	
-	
-	
-	
+
+
+
+
 	public UserServiceImpl(UserRepository userRepository,PasswordEncoder passwordEncoder) {
 	    this.userRepository = userRepository;
 	    this.passwordEncoder=passwordEncoder;
 	}
-	
-	
+
+
 	User user = new User();
-	
+
 	@Override
 	public void register(RegisterRequest request) {
 		if(userRepository.existsByEmail(request.getEmail())) {
@@ -43,11 +43,11 @@ public class UserServiceImpl implements UserService{
 		user.setCreatedAt(LocalDateTime.now());
 		user.setUpdatedAt(LocalDateTime.now());
 		user.setPassword(passwordEncoder.encode(request.getPassword()));
-		
+
 		userRepository.save(user);
-		
+
 	}
 
-	
+
 
 }

@@ -5,9 +5,9 @@ import org.springframework.stereotype.Repository;
 
 import com.example.compass.model.User;
 
-@Repository	
+@Repository
 public interface UserRepository extends JpaRepository<User,Long>{
-	
+
 	boolean existsByEmail(String email);
-	
+
 }

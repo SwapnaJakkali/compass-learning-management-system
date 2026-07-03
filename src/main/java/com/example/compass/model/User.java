@@ -17,21 +17,21 @@ public class User {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
-	
+
 	private String firstName;
-	
+
 	private String lastName;
-	
+
 	@Column(unique=true,nullable=false)
 	private String email;
-	
+
 	private String password;
-	
+
 	@Enumerated(EnumType.STRING)
 	private Role role;
-	
+
 	private LocalDateTime createdAt;
-	
+
 	private LocalDateTime updatedAt;
 
 	public User(Long id, String firstName, String lastName, String email, String password, Role role,
@@ -114,6 +114,6 @@ public class User {
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
 	}
-	
-	
+
+
 }
