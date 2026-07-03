@@ -1,10 +1,12 @@
 package com.example.compass.serviceImps;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.compass.dto.LoginRequest;
 import com.example.compass.dto.RegisterRequest;
 import com.example.compass.enums.Role;
 import com.example.compass.model.User;
@@ -28,14 +30,14 @@ public class UserServiceImpl implements UserService{
 	}
 
 
-	User user = new User();
+	
 
 	@Override
 	public void register(RegisterRequest request) {
 		if(userRepository.existsByEmail(request.getEmail())) {
-			System.out.println("user already exists please login");
-			return ;
+            throw new RuntimeException("User already exists with email: " + request.getEmail());
 		}
+		User user = new User();
 		user.setFirstName(request.getFirstName());
 		user.setLastName(request.getLastName());
 		user.setEmail(request.getEmail());
@@ -46,6 +48,22 @@ public class UserServiceImpl implements UserService{
 
 		userRepository.save(user);
 
+	}
+
+
+
+
+	@Override
+	public void login(LoginRequest request) throws RuntimeException {
+		Optional<User> opUser=userRepository.findByEmail(request.getEmail());
+		if(opUser.isEmpty()) {
+			throw new RuntimeException("user does not exist , please register");
+		}else {
+			User dbUser=opUser.get();
+			if(!passwordEncoder.matches(request.getPassword(),dbUser.getPassword())) {
+				throw new RuntimeException("Invalid email or password");
+			}
+		}
 	}
 
 

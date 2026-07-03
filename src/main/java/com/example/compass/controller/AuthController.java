@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.compass.dto.LoginRequest;
 import com.example.compass.dto.RegisterRequest;
 import com.example.compass.dto.RegisterResponse;
 import com.example.compass.service.UserService;
@@ -25,9 +26,16 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
-    	System.out.println("Controller Executed");
     	userService.register(request);
     	return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new RegisterResponse("User registered successfully", request.getEmail()));
     }
+    
+    @PostMapping("/verify")
+    public String postMethodName(@Valid @RequestBody LoginRequest request) {
+        //TODO: process POST request
+        userService.login(request);
+        return "logged in";
+    }
+    
 }
