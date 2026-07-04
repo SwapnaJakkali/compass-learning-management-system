@@ -11,6 +11,7 @@ import com.example.compass.dto.RegisterRequest;
 import com.example.compass.enums.Role;
 import com.example.compass.model.User;
 import com.example.compass.repository.UserRepository;
+import com.example.compass.security.JwtUtil;
 import com.example.compass.service.UserService;
 
 
@@ -20,17 +21,18 @@ public class UserServiceImpl implements UserService{
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final JwtUtil jwtUtil;
 
 
 
-
-	public UserServiceImpl(UserRepository userRepository,PasswordEncoder passwordEncoder) {
+	public UserServiceImpl(UserRepository userRepository,PasswordEncoder passwordEncoder,JwtUtil jwtUtil) {
 	    this.userRepository = userRepository;
 	    this.passwordEncoder=passwordEncoder;
+	    this.jwtUtil=jwtUtil;
 	}
 
 
-	
+
 
 	@Override
 	public void register(RegisterRequest request) {
@@ -54,7 +56,7 @@ public class UserServiceImpl implements UserService{
 
 
 	@Override
-	public void login(LoginRequest request) throws RuntimeException {
+	public String login(LoginRequest request) throws RuntimeException {
 		Optional<User> opUser=userRepository.findByEmail(request.getEmail());
 		if(opUser.isEmpty()) {
 			throw new RuntimeException("user does not exist , please register");
@@ -63,6 +65,7 @@ public class UserServiceImpl implements UserService{
 			if(!passwordEncoder.matches(request.getPassword(),dbUser.getPassword())) {
 				throw new RuntimeException("Invalid email or password");
 			}
+			return jwtUtil.generateToken(dbUser.getEmail());
 		}
 	}
 

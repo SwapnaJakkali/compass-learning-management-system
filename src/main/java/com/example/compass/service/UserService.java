@@ -7,6 +7,6 @@ public interface UserService {
 
 	void register(RegisterRequest request) throws RuntimeException;
 
-	void login(LoginRequest request) throws RuntimeException; 
+	String login(LoginRequest request) throws RuntimeException;
 
 }

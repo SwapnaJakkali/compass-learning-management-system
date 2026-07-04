@@ -30,12 +30,12 @@ public class AuthController {
     	return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new RegisterResponse("User registered successfully", request.getEmail()));
     }
-    
+
     @PostMapping("/verify")
     public String postMethodName(@Valid @RequestBody LoginRequest request) {
         //TODO: process POST request
-        userService.login(request);
-        return "logged in";
+        
+        return userService.login(request);
     }
-    
+
 }
