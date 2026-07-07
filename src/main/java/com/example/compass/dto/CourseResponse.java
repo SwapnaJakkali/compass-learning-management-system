@@ -19,14 +19,14 @@ public class CourseResponse {
 
     private Level level;
 
-    private CourseStatus status;
+    private CourseStatus courseStatus;
 
     private String thumbnailUrl;
 
     private String instructorName;
 
 	public CourseResponse(Long id, String title, String description, BigDecimal price, Category category, Level level,
-			CourseStatus status, String thumbnailUrl, String instructorName) {
+			 CourseStatus courseStatus, String thumbnailUrl, String instructorName) {
 		super();
 		this.id = id;
 		this.title = title;
@@ -34,7 +34,7 @@ public class CourseResponse {
 		this.price = price;
 		this.category = category;
 		this.level = level;
-		this.status = status;
+		this.courseStatus = courseStatus;
 		this.thumbnailUrl = thumbnailUrl;
 		this.instructorName = instructorName;
 	}
@@ -91,12 +91,12 @@ public class CourseResponse {
 		this.level = level;
 	}
 
-	public CourseStatus getStatus() {
-		return status;
+	public CourseStatus getCourseStatus() {
+		return courseStatus;
 	}
 
-	public void setStatus(CourseStatus status) {
-		this.status = status;
+	public void setCourseStatus(CourseStatus courseStatus) {
+		this.courseStatus = courseStatus;
 	}
 
 	public String getThumbnailUrl() {

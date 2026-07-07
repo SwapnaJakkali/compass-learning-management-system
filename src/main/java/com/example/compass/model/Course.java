@@ -2,11 +2,14 @@ package com.example.compass.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.example.compass.enums.Category;
 import com.example.compass.enums.CourseStatus;
 import com.example.compass.enums.Level;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,6 +20,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -45,7 +49,7 @@ public class Course {
 	@Enumerated(EnumType.STRING)
 	private CourseStatus courseStatus;
 	
-	private String thumbnail;
+	private String thumbnailUrl;
 	
 	private LocalDateTime createdAt;
 	
@@ -55,6 +59,11 @@ public class Course {
 	@JoinColumn(name="instructor_id",nullable=false)
 	private User instructor;
 
+	@OneToMany(
+			mappedBy="course",
+			cascade=CascadeType.ALL,
+			orphanRemoval=true)
+	private List<Section> sections=new ArrayList<>();	
 	
 	public Course() {
 		super();
@@ -62,7 +71,7 @@ public class Course {
 
 
 	public Course(Long id, String title, String description, BigDecimal price, Category category, Level level,
-			CourseStatus courseStatus, String thumbnail, LocalDateTime createdAt, LocalDateTime updatedAt,
+			CourseStatus courseStatus, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt,
 			User instructor) {
 		super();
 		this.id = id;
@@ -72,7 +81,7 @@ public class Course {
 		this.category = category;
 		this.level = level;
 		this.courseStatus = courseStatus;
-		this.thumbnail = thumbnail;
+		this.thumbnailUrl = thumbnailUrl;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 		this.instructor = instructor;
@@ -149,13 +158,13 @@ public class Course {
 	}
 
 
-	public String getThumbnail() {
-		return thumbnail;
+	public String getThumbnailUrl() {
+		return thumbnailUrl;
 	}
 
 
-	public void setThumbnail(String thumbnail) {
-		this.thumbnail = thumbnail;
+	public void setThumbnailUrl(String thumbnailUrl) {
+		this.thumbnailUrl = thumbnailUrl;
 	}
 
 

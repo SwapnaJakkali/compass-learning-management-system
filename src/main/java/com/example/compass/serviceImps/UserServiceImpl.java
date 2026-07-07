@@ -64,8 +64,6 @@ public class UserServiceImpl implements UserService{
 	}
 
 
-
-
 	@Override
 	public LoginResponse login(LoginRequest request) throws RuntimeException {
 		Optional<User> opUser=userRepository.findByEmail(request.getEmail());
