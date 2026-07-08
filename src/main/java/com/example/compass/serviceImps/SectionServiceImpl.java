@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.example.compass.dto.SectionRequest;
 import com.example.compass.dto.SectionResponse;
+import com.example.compass.exception.CourseNotFoundException;
+import com.example.compass.exception.UnauthorizedCourseAccessException;
 import com.example.compass.model.Course;
 import com.example.compass.model.Section;
 import com.example.compass.model.User;
@@ -41,10 +43,10 @@ public class SectionServiceImpl implements SectionService{
 	@Override
 	public SectionResponse createSection(Long courseId, SectionRequest request) {
 		Course course = courseRepository.findById(courseId)
-				.orElseThrow(()->new RuntimeException("Course not found"));
+				.orElseThrow(()->new CourseNotFoundException("Course not Found"));
 		User currentUser = currentUserService.getCurrentUser();
 		if(!currentUser.getId().equals(course.getInstructor().getId())) {
-			throw new RuntimeException("You are not authorized to modify this course");
+			throw new UnauthorizedCourseAccessException("You are not authorized to modify this course");
 		}
 		
 		Section section = new Section();
@@ -65,7 +67,7 @@ public class SectionServiceImpl implements SectionService{
 	@Override
 	public List<SectionResponse> getSectionsByCourse(Long courseId) {
 		courseRepository.findById(courseId)
-				.orElseThrow(()->new RuntimeException("Course not found"));
+				.orElseThrow(()->new CourseNotFoundException("Course not Found"));
 		List<Section> sections =  sectionRepository.findByCourseIdOrderBySectionOrderAsc(courseId);
 		return sections.stream()
 				.map(s->mapToResponse(s))

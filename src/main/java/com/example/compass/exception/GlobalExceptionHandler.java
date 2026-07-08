@@ -27,12 +27,37 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(errors);  // Returns 400 Bad Request
     }
-
-    // Handle duplicate email
+    
+    
+    @ExceptionHandler(CourseNotFoundException.class)
+    public ResponseEntity<Map<String , String>> handleCourseNotFoundException(CourseNotFoundException e){
+    		Map<String,String> error=new HashMap<>();
+    		error.put("error", e.getMessage());
+    		
+    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+    
+    
+    @ExceptionHandler(UnauthorizedCourseAccessException.class)
+    public ResponseEntity<Map<String , String>> handleUnauthorizedCourseAccessException(UnauthorizedCourseAccessException e){
+    		Map<String,String> error=new HashMap<>();
+    		error.put("error", e.getMessage());
+    		
+    		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+    
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<Map<String , String>> handleAcessDeniedException(org.springframework.security.access.AccessDeniedException e){
+    		Map<String , String> err=new HashMap<>();
+    		err.put("error","You are not authorized to perform this action." );
+    		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(err);
+    }
+    
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException ex) {
         Map<String, String> error = new HashMap<>();
-        error.put("error", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);  // Returns 409 Conflict
+        error.put("error", "Something went wrong");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);  
     }
+    
 }
