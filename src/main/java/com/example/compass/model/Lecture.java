@@ -1,10 +1,7 @@
 package com.example.compass.model;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,13 +10,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="sections")
-public class Section {
-	
+@Table(name="lectures")
+public class Lecture {
+
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
@@ -30,8 +26,16 @@ public class Section {
 	@Column(length=1000)
 	private String description;
 	
-	@Column(name="section_order",nullable=false)
-	private Integer sectionOrder;
+	private String videoUrl;
+	
+	@Column(name="lecture_order",nullable=false)
+	private Integer lectureOrder;
+	
+	@Column(nullable=false)
+	private Integer durationSeconds;
+	
+	@Column(nullable=false)
+	private boolean previewFree;
 	
 	@Column(nullable=false)
 	private LocalDateTime createdAt;
@@ -40,30 +44,26 @@ public class Section {
 	private LocalDateTime updatedAt;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="course_id",nullable=false)
-	private Course course;
-	
-	@OneToMany(
-			mappedBy="section",
-			cascade=CascadeType.ALL,
-			orphanRemoval=true
-			)
-	private List<Lecture> lectures=new ArrayList<>();
+	@JoinColumn(name="section_id",nullable=false)
+	private Section section;
 
-	public Section() {
-		super();
-	}
-
-	public Section(Long id, String title, String description, Integer sectionOrder, LocalDateTime createdAt,
-			LocalDateTime updatedAt, Course course) {
+	public Lecture(Long id, String title, String description,String videoUrl, Integer lectureOrder, Integer durationSeconds,
+			boolean previewFree, LocalDateTime createdAt, LocalDateTime updatedAt, Section section) {
 		super();
 		this.id = id;
 		this.title = title;
 		this.description = description;
-		this.sectionOrder = sectionOrder;
+		this.lectureOrder = lectureOrder;
+		this.durationSeconds = durationSeconds;
+		this.previewFree = previewFree;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
-		this.course = course;
+		this.section = section;
+		this.videoUrl=videoUrl;
+	}
+
+	public Lecture() {
+		super();
 	}
 
 	public Long getId() {
@@ -90,12 +90,28 @@ public class Section {
 		this.description = description;
 	}
 
-	public Integer getSectionOrder() {
-		return sectionOrder;
+	public Integer getLectureOrder() {
+		return lectureOrder;
 	}
 
-	public void setSectionOrder(Integer sectionOrder) {
-		this.sectionOrder = sectionOrder;
+	public void setLectureOrder(Integer lectureOrder) {
+		this.lectureOrder = lectureOrder;
+	}
+
+	public Integer getDurationSeconds() {
+		return durationSeconds;
+	}
+
+	public void setDurationSeconds(Integer durationSeconds) {
+		this.durationSeconds = durationSeconds;
+	}
+
+	public boolean getPreviewFree() {
+		return previewFree;
+	}
+
+	public void setPreviewFree(boolean previewFree) {
+		this.previewFree = previewFree;
 	}
 
 	public LocalDateTime getCreatedAt() {
@@ -114,12 +130,20 @@ public class Section {
 		this.updatedAt = updatedAt;
 	}
 
-	public Course getCourse() {
-		return course;
+	public Section getSection() {
+		return section;
 	}
 
-	public void setCourse(Course course) {
-		this.course = course;
+	public void setSection(Section section) {
+		this.section = section;
+	}
+
+	public String getVideoUrl() {
+		return videoUrl;
+	}
+
+	public void setVideoUrl(String videoUrl) {
+		this.videoUrl = videoUrl;
 	}
 	
 	
