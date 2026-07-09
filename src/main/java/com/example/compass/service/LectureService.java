@@ -13,4 +13,8 @@ public interface LectureService {
 
 	List<LectureResponse> getLectureBysection(Long sectionId);
 
+	LectureResponse updateLecture(Long lectureId, @Valid LectureRequest request);
+
+	void deleteLecture(Long lectureId);
+
 }

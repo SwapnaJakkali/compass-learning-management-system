@@ -2,9 +2,11 @@ package com.example.compass.controller;
 
 import java.util.List;
 
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +19,8 @@ import com.example.compass.dto.SectionResponse;
 import com.example.compass.service.SectionService;
 
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 
 
@@ -46,5 +50,23 @@ public class SectionController {
 		return new ResponseEntity<>(response,HttpStatus.CREATED);
 	}
 	
+	@PreAuthorize("hasRole('INSTRUCTOR')")
+	@PutMapping("sections/{sectionId}")
+	public ResponseEntity<SectionResponse> updateSection(@PathVariable Long sectionId, 
+			@Valid @RequestBody SectionRequest request) {
+		SectionResponse response = sectionService.updateSection(sectionId,request);
+		return ResponseEntity.ok(response);
+	}
+	
+	
+	@PreAuthorize("hasRole('INSTRUCTOR')")
+	@DeleteMapping("sections/{sectionId}")
+	public ResponseEntity<Void> deleteSection(
+			@PathVariable Long sectionId){
+		
+		sectionService.deleteSection(sectionId);
+		
+		return ResponseEntity.noContent().build();
+	}
 	
 }

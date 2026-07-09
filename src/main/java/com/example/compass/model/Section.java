@@ -121,6 +121,14 @@ public class Section {
 	public void setCourse(Course course) {
 		this.course = course;
 	}
+
+	public List<Lecture> getLectures() {
+		return lectures;
+	}
+
+	public void setLectures(List<Lecture> lectures) {
+		this.lectures = lectures;
+	}
 	
 	
 	

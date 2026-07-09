@@ -29,6 +29,27 @@ public class GlobalExceptionHandler {
 				message,
 				request.getRequestURI());
 	}
+	
+	 @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+	    public ResponseEntity<ErrorResponse> handleAcessDeniedException(org.springframework.security.access.AccessDeniedException e,
+	    		HttpServletRequest request){
+
+	    		ErrorResponse response=buildErrorResponse(
+	    				HttpStatus.FORBIDDEN,
+	    				"You are not authorized to perform this action.",
+	    				request);
+	    		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+	    }
+	    
+	    @ExceptionHandler(RuntimeException.class)
+	    public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException ex,HttpServletRequest request) {
+	      
+	    		ErrorResponse response = buildErrorResponse(
+	    				HttpStatus.INTERNAL_SERVER_ERROR,
+	    				"Something went wrong",
+	    				request);
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);  
+	    }
 
     // Handle validation errors (this will fix your 401 issue)
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -46,6 +67,8 @@ public class GlobalExceptionHandler {
     }
     
     
+    
+    
     @ExceptionHandler(CourseNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleCourseNotFoundException(CourseNotFoundException e,
     											HttpServletRequest request){
@@ -56,6 +79,8 @@ public class GlobalExceptionHandler {
     		return ResponseEntity.status(HttpStatus.NOT_FOUND)
     				.body(response);
     }
+    
+    
     
     
     @ExceptionHandler(UnauthorizedCourseAccessException.class)
@@ -70,25 +95,36 @@ public class GlobalExceptionHandler {
     		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
     
-    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleAcessDeniedException(org.springframework.security.access.AccessDeniedException e,
+    
+    
+    @ExceptionHandler(LectureNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleLectureNotFoundException(LectureNotFoundException e,
     		HttpServletRequest request){
-
-    		ErrorResponse response=buildErrorResponse(
-    				HttpStatus.FORBIDDEN,
-    				"You are not authorized to perform this action.",
+    		ErrorResponse response = buildErrorResponse(HttpStatus.NOT_FOUND,
+    				e.getMessage(),
     				request);
-    		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
     
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException ex,HttpServletRequest request) {
-      
-    		ErrorResponse response = buildErrorResponse(
-    				HttpStatus.INTERNAL_SERVER_ERROR,
-    				"Something went wrong",
+    @ExceptionHandler(SectionNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleSectionNotFoundException(SectionNotFoundException e,
+    		HttpServletRequest request){
+    		ErrorResponse response = buildErrorResponse(HttpStatus.NOT_FOUND,
+    				e.getMessage(),
     				request);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);  
+    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
+    
+    
+    
+    @ExceptionHandler(InvalidCourseStateException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCourseStateException(InvalidCourseStateException e,
+    		HttpServletRequest request){
+    		ErrorResponse response = buildErrorResponse(HttpStatus.BAD_REQUEST,
+    				e.getMessage(),
+    				request);
+    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+   
     
 }

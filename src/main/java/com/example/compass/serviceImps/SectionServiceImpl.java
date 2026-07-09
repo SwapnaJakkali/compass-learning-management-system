@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.example.compass.dto.SectionRequest;
 import com.example.compass.dto.SectionResponse;
 import com.example.compass.exception.CourseNotFoundException;
+import com.example.compass.exception.SectionNotFoundException;
 import com.example.compass.exception.UnauthorizedCourseAccessException;
 import com.example.compass.model.Course;
 import com.example.compass.model.Section;
@@ -16,6 +17,8 @@ import com.example.compass.repository.CourseRepository;
 import com.example.compass.repository.SectionRepository;
 import com.example.compass.service.CurrentUserService;
 import com.example.compass.service.SectionService;
+
+import jakarta.validation.Valid;
 
 @Service
 public class SectionServiceImpl implements SectionService{
@@ -37,6 +40,7 @@ public class SectionServiceImpl implements SectionService{
 		response.setTitle(section.getTitle());
 		response.setDescription(section.getDescription());
 		response.setSectionOrder(section.getSectionOrder());
+		
 		return response;
 	}
 	
@@ -54,6 +58,7 @@ public class SectionServiceImpl implements SectionService{
 		section.setTitle(request.getTitle());
 		section.setDescription(request.getDescription());
 		section.setSectionOrder(request.getSectionOrder());
+		
 		LocalDateTime now = LocalDateTime.now();
 		section.setCreatedAt(now);
 		section.setUpdatedAt(now);
@@ -72,6 +77,40 @@ public class SectionServiceImpl implements SectionService{
 		return sections.stream()
 				.map(s->mapToResponse(s))
 				.toList();
-		
 	}
+
+	@Override
+	public SectionResponse updateSection(Long sectionId, @Valid SectionRequest request) {
+		
+		Section section=sectionRepository.findById(sectionId)
+		.orElseThrow(()->new SectionNotFoundException("Section not found"));
+		
+		User currentUser = currentUserService.getCurrentUser();
+		if(!currentUser.getId().equals(section.getCourse().getInstructor().getId())) {
+			throw new UnauthorizedCourseAccessException("You are not authorized to modify this course");
+		}
+		
+		section.setUpdatedAt(LocalDateTime.now());
+		section.setTitle(request.getTitle());
+		section.setDescription(request.getDescription());
+		section.setSectionOrder(request.getSectionOrder());
+		
+		Section updatedSection = sectionRepository.save(section);
+		return mapToResponse(updatedSection);
+	}
+
+	@Override
+	public void deleteSection(Long sectionId) {
+
+		Section section = sectionRepository.findById(sectionId)
+				.orElseThrow(()-> new SectionNotFoundException("Section Not Found"));
+		User currentUser=currentUserService.getCurrentUser();
+		if(!currentUser.getId().equals(section.getCourse().getInstructor().getId())) {
+			throw new UnauthorizedCourseAccessException("You are not authorized to modify this course");
+		}
+		
+		sectionRepository.delete(section);
+	}
+	
+
 }

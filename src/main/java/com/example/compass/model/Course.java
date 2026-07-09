@@ -196,6 +196,18 @@ public class Course {
 	public void setInstructor(User instructor) {
 		this.instructor = instructor;
 	}
+
+
+	public List<Section> getSections() {
+		return sections;
+	}
+
+
+	public void setSections(List<Section> sections) {
+		this.sections = sections;
+	}
+	
+	
 	
 	
 }

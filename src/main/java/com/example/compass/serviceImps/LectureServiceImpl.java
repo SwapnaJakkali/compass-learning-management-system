@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.compass.dto.LectureRequest;
 import com.example.compass.dto.LectureResponse;
+import com.example.compass.exception.LectureNotFoundException;
 import com.example.compass.exception.SectionNotFoundException;
 import com.example.compass.exception.UnauthorizedCourseAccessException;
 import com.example.compass.model.Course;
@@ -17,6 +18,8 @@ import com.example.compass.repository.LectureRepository;
 import com.example.compass.repository.SectionRepository;
 import com.example.compass.service.CurrentUserService;
 import com.example.compass.service.LectureService;
+
+import jakarta.validation.Valid;
 
 @Service
 public class LectureServiceImpl implements LectureService{
@@ -64,7 +67,7 @@ public class LectureServiceImpl implements LectureService{
 		Lecture lecture = new Lecture();
 		lecture.setTitle(request.getTitle());
 		lecture.setDescription(request.getDescription());
-		lecture.setLectureOrder(request.getLectueOder());
+		lecture.setLectureOrder(request.getLectureOrder());
 		lecture.setDurationSeconds(request.getDurationSeconds());
 		lecture.setPreviewFree(request.getPreviewFree());
 		lecture.setVideoUrl(request.getVideoUrl());
@@ -86,6 +89,44 @@ public class LectureServiceImpl implements LectureService{
 		return lectures.stream()
 				.map(this::mapToResponse)
 				.toList();		
+	}
+	
+	
+	@Override
+	public LectureResponse updateLecture(Long lectureId, @Valid LectureRequest request) {
+		Lecture lecture =  lectureRepository.findById(lectureId)
+				.orElseThrow(()->new LectureNotFoundException("Lecture is not found"));
+//		
+		User currentUser=currentUserService.getCurrentUser();
+		
+		Course course = lecture.getSection().getCourse();
+		
+		if(!currentUser.getId().equals(course.getInstructor().getId())) {
+			throw new UnauthorizedCourseAccessException("You are not allowed to modify this course lecture");
+		}
+		lecture.setTitle(request.getTitle());
+		lecture.setDescription(request.getDescription());
+		lecture.setDurationSeconds(request.getDurationSeconds());
+		lecture.setLectureOrder(request.getLectureOrder());
+		lecture.setPreviewFree(request.getPreviewFree());
+		lecture.setVideoUrl(request.getVideoUrl());
+		
+		lecture.setUpdatedAt(LocalDateTime.now());
+		Lecture updatedLecture = lectureRepository.save(lecture);
+		return mapToResponse(updatedLecture);
+	}
+	@Override
+	public void deleteLecture(Long lectureId) {
+		Lecture lecture=lectureRepository.findById(lectureId)
+				.orElseThrow(()->new LectureNotFoundException("Lecture not found"));
+		
+		User currentUser=currentUserService.getCurrentUser();
+		Course course=lecture.getSection().getCourse();
+		
+		if(!currentUser.getId().equals(course.getInstructor().getId())) {
+			throw new UnauthorizedCourseAccessException("You are not allowed to modify this course");
+		}
+		lectureRepository.delete(lecture);
 	}
 
 }
