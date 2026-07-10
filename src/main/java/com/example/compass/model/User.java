@@ -1,9 +1,12 @@
 package com.example.compass.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.example.compass.enums.Role;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,6 +14,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class User {
@@ -34,6 +38,11 @@ public class User {
 
 	private LocalDateTime updatedAt;
 
+	@OneToMany(mappedBy="student",
+			cascade=CascadeType.ALL,
+			orphanRemoval=true)
+	private List<Enrollment> enrollments = new ArrayList<>();
+	
 	public User(Long id, String firstName, String lastName, String email, String password, Role role,
 			LocalDateTime createdAt, LocalDateTime updatedAt) {
 		super();
@@ -113,6 +122,14 @@ public class User {
 
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	public List<Enrollment> getEnrollments() {
+		return enrollments;
+	}
+
+	public void setEnrollments(List<Enrollment> enrollments) {
+		this.enrollments = enrollments;
 	}
 
 

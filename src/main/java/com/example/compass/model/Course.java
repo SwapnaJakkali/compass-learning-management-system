@@ -65,6 +65,11 @@ public class Course {
 			orphanRemoval=true)
 	private List<Section> sections=new ArrayList<>();	
 	
+	@OneToMany(mappedBy="course",
+			cascade=CascadeType.ALL,
+			orphanRemoval=true)
+	private List<Enrollment> enrollments = new ArrayList<>();
+	
 	public Course() {
 		super();
 	}
