@@ -7,14 +7,17 @@ import org.springframework.stereotype.Service;
 
 import com.example.compass.dto.CourseRequest;
 import com.example.compass.dto.CourseResponse;
+import com.example.compass.dto.StudentResponse;
 import com.example.compass.enums.CourseStatus;
 import com.example.compass.exception.CourseNotFoundException;
 import com.example.compass.exception.InvalidCourseStateException;
 import com.example.compass.exception.UnauthorizedCourseAccessException;
+import com.example.compass.mapper.CourseMapper;
 import com.example.compass.model.Course;
 import com.example.compass.model.Section;
 import com.example.compass.model.User;
 import com.example.compass.repository.CourseRepository;
+import com.example.compass.service.CourseAuthorizationService;
 import com.example.compass.service.CourseService;
 import com.example.compass.service.CurrentUserService;
 
@@ -22,23 +25,20 @@ import jakarta.validation.Valid;
 
 @Service
 public class CourseServiceImpl implements CourseService{
+	
 	private final CourseRepository courseRepository;
 	private final CurrentUserService currentUserService;
+	private final CourseMapper courseMapper;
+	private final CourseAuthorizationService courseAuthorizationService;
 	
-	public CourseServiceImpl(CourseRepository courseRepository , CurrentUserService currentUserService ) {
+	public CourseServiceImpl(CourseRepository courseRepository , 
+			CurrentUserService currentUserService ,
+			CourseMapper courseMapper,
+			CourseAuthorizationService courseAuthorizationService) {
 		this.courseRepository=courseRepository;
 		this.currentUserService=currentUserService;
-	}
-	
-	private Course getAuthorizedCourse(Long courseId) {
-		Course course = courseRepository.findById(courseId)
-				.orElseThrow(()->new CourseNotFoundException("Course Not Found"));
-		
-		User currentUser = currentUserService.getCurrentUser();
-		if(!currentUser.getId().equals(course.getInstructor().getId())) {
-			throw new UnauthorizedCourseAccessException("You are not Authoried to modify this course");
-		}
-		return course;
+		this.courseMapper=courseMapper;
+		this.courseAuthorizationService=courseAuthorizationService;
 	}
 	
 	private void validateCourseForPublish(Course course) {
@@ -56,26 +56,7 @@ public class CourseServiceImpl implements CourseService{
 		 
 	}
 	
-	private CourseResponse mapToResponse(Course course) {
-		CourseResponse response = new CourseResponse();
-
-	    response.setId(course.getId());
-	    response.setTitle(course.getTitle());
-	    response.setDescription(course.getDescription());
-	    response.setPrice(course.getPrice());
-	    response.setCategory(course.getCategory());
-	    response.setLevel(course.getLevel());
-	    response.setCourseStatus(course.getCourseStatus());
-	    response.setThumbnailUrl(course.getThumbnailUrl());
-
-	    response.setInstructorName(
-	            course.getInstructor().getFirstName()
-	            + " "
-	            + course.getInstructor().getLastName());
-
-	    return response;
-	}
-
+	
 	@Override
 	public CourseResponse createCourse(CourseRequest request) {
 		User instructor = currentUserService.getCurrentUser();
@@ -96,7 +77,7 @@ public class CourseServiceImpl implements CourseService{
 		
 		Course savedCourse=courseRepository.save(course);		
 		
-		return mapToResponse(savedCourse);
+		return courseMapper.toResponse(savedCourse);
 	}
 
 	@Override
@@ -104,14 +85,14 @@ public class CourseServiceImpl implements CourseService{
 		List<Course> courses = courseRepository.findAll();
 		return courses.stream()
 			.map(course->{
-	            return mapToResponse(course);
+	            return courseMapper.toResponse(course);
 			}).toList();
 	}
 
 	@Override
 	public void deleteCourse(Long courseId) {
 
-		Course course=getAuthorizedCourse(courseId);
+		Course course=courseAuthorizationService.getAuthorizedCourse(courseId);;
 		
 		courseRepository.delete(course);
 		
@@ -119,7 +100,7 @@ public class CourseServiceImpl implements CourseService{
 
 	@Override
 	public CourseResponse updateCourse(Long courseId, @Valid CourseRequest request) {
-		Course course = getAuthorizedCourse(courseId);
+		Course course = courseAuthorizationService.getAuthorizedCourse(courseId);;
 		
 		course.setCategory(request.getCategory());
 		course.setDescription(request.getDescription());
@@ -128,13 +109,13 @@ public class CourseServiceImpl implements CourseService{
 		course.setThumbnailUrl(request.getThumbnailUrl());
 		course.setUpdatedAt(LocalDateTime.now());
 		
-		return mapToResponse(course);
+		return courseMapper.toResponse(course);
 	}
 
 	@Override
 	public CourseResponse publishCourse(Long courseId) {
 		
-		Course course =getAuthorizedCourse(courseId);
+		Course course =courseAuthorizationService.getAuthorizedCourse(courseId);;
 		
 		validateCourseForPublish(course);
 		
@@ -143,7 +124,7 @@ public class CourseServiceImpl implements CourseService{
 		
 		Course updatedCourse=courseRepository.save(course);
 		
-		return mapToResponse(updatedCourse);
+		return courseMapper.toResponse(updatedCourse);
 	}
 
 	
@@ -151,28 +132,30 @@ public class CourseServiceImpl implements CourseService{
 	@Override
 	public CourseResponse draftCourse(Long courseId) {
 		
-		Course course =getAuthorizedCourse(courseId);
+		Course course =courseAuthorizationService.getAuthorizedCourse(courseId);
 		
 		course.setCourseStatus(CourseStatus.DRAFT);
 		course.setUpdatedAt(LocalDateTime.now());
 		
 		Course updatedCourse=courseRepository.save(course);
 		
-		return mapToResponse(updatedCourse);
+		return courseMapper.toResponse(updatedCourse);
 	}
 
 	@Override
 	public CourseResponse archiveCourse(Long courseId) {
 		
-		Course course =getAuthorizedCourse(courseId);
+		Course course =courseAuthorizationService.getAuthorizedCourse(courseId);
 		
 		course.setCourseStatus(CourseStatus.ARCHIVED);
 		course.setUpdatedAt(LocalDateTime.now());
 		
 		Course updatedCourse=courseRepository.save(course);
 		
-		return mapToResponse(updatedCourse);
+		return courseMapper.toResponse(updatedCourse);
 	}
+
+	
 	
 	
 }

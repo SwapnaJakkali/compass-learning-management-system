@@ -74,7 +74,6 @@ public class Course {
 		super();
 	}
 
-
 	public Course(Long id, String title, String description, BigDecimal price, Category category, Level level,
 			CourseStatus courseStatus, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt,
 			User instructor) {

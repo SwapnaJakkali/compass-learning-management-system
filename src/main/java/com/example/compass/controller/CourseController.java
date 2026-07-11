@@ -13,13 +13,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.compass.dto.CourseRequest;
 import com.example.compass.dto.CourseResponse;
+import com.example.compass.dto.StudentResponse;
 import com.example.compass.service.CourseService;
 
 import jakarta.validation.Valid;
+
 
 
 
@@ -45,7 +48,7 @@ public class CourseController {
 	@GetMapping("/")
 	public  ResponseEntity<List<CourseResponse>> getMethodName() {
 		List<CourseResponse> li =  courseService.getAllCourses();
-		
+//		System.out.println("hi");
 		return ResponseEntity.status(HttpStatus.OK).body(li);
 	}
 
@@ -86,6 +89,9 @@ public class CourseController {
 		CourseResponse response=courseService.archiveCourse(courseId);
 		return ResponseEntity.ok(response);
 	}
+	
+	
+	
 	
 	
 }

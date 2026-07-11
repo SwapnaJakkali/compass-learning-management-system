@@ -1,15 +1,33 @@
 package com.example.compass.controller;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.compass.dto.CourseResponse;
+import com.example.compass.service.EnrollmentService;
+
+
 @RestController
-@RequestMapping("/api/student")
+@RequestMapping("/api/students")
 public class StudentController {
 	
-	@GetMapping("/helo")
-	public String hello() {
-	    return "Hello Student";
+	private final EnrollmentService enrollmentService ;
+	
+	public StudentController(EnrollmentService enrollmentService) {
+		this.enrollmentService=enrollmentService;
 	}
+	
+	@PreAuthorize("hasRole('STUDENT')")
+	@GetMapping("/my-courses")
+	public ResponseEntity<List<CourseResponse>> allCourses() {
+		
+		List<CourseResponse> response=enrollmentService.getAllEnrolledCourses();
+		return ResponseEntity.ok(response);
+	}
+	
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.example.compass.dto.CourseRequest;
 import com.example.compass.dto.CourseResponse;
+import com.example.compass.dto.StudentResponse;
 
 import jakarta.validation.Valid;
 
@@ -22,5 +23,6 @@ public interface CourseService {
 	CourseResponse draftCourse(Long courseId);
 
 	CourseResponse archiveCourse(Long courseId);
+
 	
 }
