@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,6 +29,28 @@ public class GlobalExceptionHandler {
 				status.getReasonPhrase(),
 				message,
 				request.getRequestURI());
+	}
+	
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public ResponseEntity<Map<String, String>> handleJsonParseException(HttpMessageNotReadableException ex) {
+
+	    String message = ex.getMostSpecificCause().getMessage();
+
+	    if (message.contains("Category")) {
+	        return ResponseEntity.badRequest().body(
+	                Map.of("error", "Invalid category. Allowed values: PROGRAMMING, WEB_DEVELOPMENT ,  DATA_SCIENCE , DEVOPS,CLOUD , AI , DATABASE")
+	        );
+	    }
+
+	    if (message.contains("Level")) {
+	        return ResponseEntity.badRequest().body(
+	                Map.of("error", "Invalid level. Allowed values: BEGINNER, INTERMEDIATE, ADVANCED")
+	        );
+	    }
+
+	    return ResponseEntity.badRequest().body(
+	            Map.of("error", "Invalid request body.")
+	    );
 	}
 	
 	 @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)

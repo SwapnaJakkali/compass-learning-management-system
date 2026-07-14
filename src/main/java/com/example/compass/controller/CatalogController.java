@@ -26,9 +26,12 @@ public class CatalogController {
 			@RequestParam(defaultValue="0") int page,
 			@RequestParam(defaultValue="10") int size,
 			@RequestParam(defaultValue = "title") String sortBy,
-			@RequestParam(defaultValue = "asc") String direction) {
+			@RequestParam(defaultValue = "asc") String direction,
+			@RequestParam(defaultValue="") String keyword,
+			@RequestParam(defaultValue="") String category,
+			@RequestParam(defaultValue="") String level){
 		
-		Page<CourseResponse> li=catalogService.getPublishedCourses(page , size , sortBy , direction); 
+		Page<CourseResponse> li=catalogService.getPublishedCourses(page , size , sortBy , direction, keyword , category,level); 
 		return ResponseEntity.ok(li);
 	}
 	

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.compass.dto.StudentResponse;
 import com.example.compass.model.Enrollment;
+import com.example.compass.model.User;
 
 public interface EnrollmentRepository extends JpaRepository<Enrollment,Long>{
 
@@ -14,5 +15,7 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment,Long>{
 	List<Enrollment> findByStudentId(Long studentId);
 
 	List<Enrollment> findByCourseId(Long courseId);
+
+	long countByCourseInstructor(User instructor);
 
 }

@@ -39,9 +39,17 @@ public class CourseController {
 	@PreAuthorize("hasRole('INSTRUCTOR')")	
 	@PostMapping("/")
 	public ResponseEntity<CourseResponse> createCourse(@Valid @RequestBody CourseRequest request) {
+		System.out.println("hi");
 		CourseResponse response=courseService.createCourse(request);
+		
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
+//	@PreAuthorize("hasRole('INSTRUCTOR')")
+//	@PostMapping("/")
+//	public ResponseEntity<String> createCourse() {
+//	    System.out.println("HI");
+//	    return ResponseEntity.ok("Success");
+//	}
 	
 	@PreAuthorize("hasRole('STUDENT') or hasRole('INSTRUCTOR')")
 //	@PreAuthorize("hasAnyRole('STUDENT', 'INSTRUCTOR', 'ADMIN')")
