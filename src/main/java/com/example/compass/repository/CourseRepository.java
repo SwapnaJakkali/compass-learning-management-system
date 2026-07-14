@@ -25,4 +25,6 @@ public interface CourseRepository extends JpaRepository<Course,Long> , JpaSpecif
 
 	long countByInstructor(User instructor);
 
+	
+
 }
