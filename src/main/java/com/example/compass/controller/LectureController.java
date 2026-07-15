@@ -7,24 +7,29 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.compass.dto.LectureRequest;
 import com.example.compass.dto.LectureResponse;
 import com.example.compass.service.LectureService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PutMapping;
 
 
 
 
 @RequestMapping("api/sections")
 @RestController	
+@SecurityRequirement(name = "bearerAuth")
 public class LectureController {
 	
 	private final LectureService lectureService;
@@ -70,5 +75,17 @@ public class LectureController {
 		return ResponseEntity.noContent().build();
 	}
 	
+	
+	@PatchMapping("/{lectureId}/video")
+	@PreAuthorize("hasRole('INSTRUCTOR')")
+	public ResponseEntity<LectureResponse> updateVideo(
+	        @PathVariable Long lectureId,
+	        @RequestParam("file") MultipartFile file) {
+
+	    LectureResponse response =
+	            lectureService.updateVideo(lectureId, file);
+
+	    return ResponseEntity.ok(response);
+	}
 	
 }

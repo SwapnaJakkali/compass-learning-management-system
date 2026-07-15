@@ -9,11 +9,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.compass.dto.InstructorDashboardResponse;
 import com.example.compass.service.InstructorDashboardService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 
 
 
 @RestController
 @RequestMapping("/api/instructor/dashboard")
+@SecurityRequirement(name = "bearerAuth")
 public class InstructorDashboardController {
 
 	private final InstructorDashboardService instructorDashboardService;

@@ -11,9 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.compass.dto.CourseResponse;
 import com.example.compass.service.EnrollmentService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 
 @RestController
 @RequestMapping("/api/students")
+@SecurityRequirement(name = "bearerAuth")
 public class StudentController {
 	
 	private final EnrollmentService enrollmentService ;

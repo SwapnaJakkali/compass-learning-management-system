@@ -4,14 +4,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.compass.dto.CourseRequest;
 import com.example.compass.dto.CourseResponse;
-import com.example.compass.dto.StudentResponse;
 import com.example.compass.enums.CourseStatus;
-import com.example.compass.exception.CourseNotFoundException;
 import com.example.compass.exception.InvalidCourseStateException;
-import com.example.compass.exception.UnauthorizedCourseAccessException;
 import com.example.compass.mapper.CourseMapper;
 import com.example.compass.model.Course;
 import com.example.compass.model.Section;
@@ -20,6 +18,7 @@ import com.example.compass.repository.CourseRepository;
 import com.example.compass.service.CourseAuthorizationService;
 import com.example.compass.service.CourseService;
 import com.example.compass.service.CurrentUserService;
+import com.example.compass.service.FileUploadService;
 
 import jakarta.validation.Valid;
 
@@ -30,15 +29,18 @@ public class CourseServiceImpl implements CourseService{
 	private final CurrentUserService currentUserService;
 	private final CourseMapper courseMapper;
 	private final CourseAuthorizationService courseAuthorizationService;
+	private final FileUploadService fileUploadService;
 	
 	public CourseServiceImpl(CourseRepository courseRepository , 
 			CurrentUserService currentUserService ,
 			CourseMapper courseMapper,
-			CourseAuthorizationService courseAuthorizationService) {
+			CourseAuthorizationService courseAuthorizationService,
+			FileUploadService fileUploadService) {
 		this.courseRepository=courseRepository;
 		this.currentUserService=currentUserService;
 		this.courseMapper=courseMapper;
 		this.courseAuthorizationService=courseAuthorizationService;
+		this.fileUploadService=fileUploadService;
 	}
 	
 	private void validateCourseForPublish(Course course) {
@@ -150,6 +152,18 @@ public class CourseServiceImpl implements CourseService{
 		course.setCourseStatus(CourseStatus.ARCHIVED);
 		course.setUpdatedAt(LocalDateTime.now());
 		
+		Course updatedCourse=courseRepository.save(course);
+		
+		return courseMapper.toResponse(updatedCourse);
+	}
+
+	@Override
+	public CourseResponse updateThumbnail(Long courseId, MultipartFile file) {
+
+		Course course=courseAuthorizationService.getAuthorizedCourse(courseId);
+		String thumbnailUrl=fileUploadService.uploadImage(file,"course-thumbnails");
+		
+		course.setThumbnailUrl(thumbnailUrl);
 		Course updatedCourse=courseRepository.save(course);
 		
 		return courseMapper.toResponse(updatedCourse);

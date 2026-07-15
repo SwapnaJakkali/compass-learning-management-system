@@ -2,6 +2,8 @@ package com.example.compass.service;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.compass.dto.CourseRequest;
 import com.example.compass.dto.CourseResponse;
 import com.example.compass.dto.StudentResponse;
@@ -23,6 +25,8 @@ public interface CourseService {
 	CourseResponse draftCourse(Long courseId);
 
 	CourseResponse archiveCourse(Long courseId);
+
+	CourseResponse updateThumbnail(Long courseId, MultipartFile file);
 
 	
 }

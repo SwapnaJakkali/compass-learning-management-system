@@ -9,16 +9,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.compass.dto.EnrollmentResponse;
 import com.example.compass.dto.StudentResponse;
 import com.example.compass.service.EnrollmentService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 
 @RestController
 @RequestMapping("/api/enrollments")
+@SecurityRequirement(name = "bearerAuth")
 public class EnrollmentController {
 
 	private final EnrollmentService enrollmentService;

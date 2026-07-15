@@ -10,9 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.compass.dto.CourseResponse;
 import com.example.compass.service.CatalogService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 
 @RequestMapping("/api/catalog")
 @RestController
+@SecurityRequirement(name = "bearerAuth")
 public class CatalogController {
 	
 	private final CatalogService catalogService;

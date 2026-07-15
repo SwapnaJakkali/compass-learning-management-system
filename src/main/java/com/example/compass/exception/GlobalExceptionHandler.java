@@ -73,6 +73,16 @@ public class GlobalExceptionHandler {
 	    				request);
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);  
 	    }
+	    
+	    @ExceptionHandler(FileUploadException.class)
+	    public ResponseEntity<ErrorResponse> handleFileUploadException(RuntimeException ex,HttpServletRequest request) {
+	      
+	    		ErrorResponse response = buildErrorResponse(
+	    				HttpStatus.INTERNAL_SERVER_ERROR,
+	    				"Something went wrong",
+	    				request);
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);  
+	    }
 
     // Handle validation errors (this will fix your 401 issue)
     @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.compass.dto.LectureRequest;
 import com.example.compass.dto.LectureResponse;
@@ -17,6 +18,7 @@ import com.example.compass.model.User;
 import com.example.compass.repository.LectureRepository;
 import com.example.compass.repository.SectionRepository;
 import com.example.compass.service.CurrentUserService;
+import com.example.compass.service.FileUploadService;
 import com.example.compass.service.LectureService;
 
 import jakarta.validation.Valid;
@@ -27,14 +29,18 @@ public class LectureServiceImpl implements LectureService{
 	private final LectureRepository lectureRepository;
 	private final SectionRepository sectionRepository;
 	private final CurrentUserService currentUserService;
+	private final FileUploadService fileUploadService;
 	
 	public LectureServiceImpl(LectureRepository lectureRepository,
 			SectionRepository sectionRepository,
-			CurrentUserService currentUserService) {
+			CurrentUserService currentUserService,
+			FileUploadService fileUploadService) {
 		this.lectureRepository=lectureRepository;
 		this.currentUserService=currentUserService;
 		this.sectionRepository=sectionRepository;
+		this.fileUploadService=fileUploadService;
 	}
+	
 	private LectureResponse mapToResponse(Lecture lecture) {
 		LectureResponse response = new LectureResponse();
 		
@@ -47,6 +53,21 @@ public class LectureServiceImpl implements LectureService{
 		response.setPreviewFree(lecture.getPreviewFree());
 		
 		return response;
+	}
+	
+	private Lecture getLecture(Long lectureId) {
+		Lecture lecture =  lectureRepository.findById(lectureId)
+				.orElseThrow(()->new LectureNotFoundException("Lecture is not found"));
+//		
+		User currentUser=currentUserService.getCurrentUser();
+		
+		Course course = lecture.getSection().getCourse();
+		
+		if(!currentUser.getId().equals(course.getInstructor().getId())) {
+			throw new UnauthorizedCourseAccessException("You are not allowed to modify this course lecture");
+		}
+		
+		return lecture;
 	}
 	
 	@Override
@@ -94,16 +115,10 @@ public class LectureServiceImpl implements LectureService{
 	
 	@Override
 	public LectureResponse updateLecture(Long lectureId, @Valid LectureRequest request) {
-		Lecture lecture =  lectureRepository.findById(lectureId)
-				.orElseThrow(()->new LectureNotFoundException("Lecture is not found"));
-//		
-		User currentUser=currentUserService.getCurrentUser();
 		
-		Course course = lecture.getSection().getCourse();
+		Lecture lecture=getLecture(lectureId);
 		
-		if(!currentUser.getId().equals(course.getInstructor().getId())) {
-			throw new UnauthorizedCourseAccessException("You are not allowed to modify this course lecture");
-		}
+		
 		lecture.setTitle(request.getTitle());
 		lecture.setDescription(request.getDescription());
 		lecture.setDurationSeconds(request.getDurationSeconds());
@@ -117,16 +132,15 @@ public class LectureServiceImpl implements LectureService{
 	}
 	@Override
 	public void deleteLecture(Long lectureId) {
-		Lecture lecture=lectureRepository.findById(lectureId)
-				.orElseThrow(()->new LectureNotFoundException("Lecture not found"));
-		
-		User currentUser=currentUserService.getCurrentUser();
-		Course course=lecture.getSection().getCourse();
-		
-		if(!currentUser.getId().equals(course.getInstructor().getId())) {
-			throw new UnauthorizedCourseAccessException("You are not allowed to modify this course");
-		}
+		Lecture lecture=getLecture(lectureId);
 		lectureRepository.delete(lecture);
+	}
+	@Override
+	public LectureResponse updateVideo(Long lectureId, MultipartFile file) {
+		Lecture lecture=getLecture(lectureId);
+		String videoUrl=fileUploadService.uploadVideo(file, "lecture-videos");
+		lecture.setVideoUrl(videoUrl);
+		return null;
 	}
 
 }

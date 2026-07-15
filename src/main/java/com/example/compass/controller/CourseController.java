@@ -15,12 +15,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.compass.dto.CourseRequest;
 import com.example.compass.dto.CourseResponse;
-import com.example.compass.dto.StudentResponse;
 import com.example.compass.service.CourseService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 
@@ -28,6 +29,7 @@ import jakarta.validation.Valid;
 
 
 @RestController
+@SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/api/courses")
 public class CourseController {
 	private final CourseService courseService;
@@ -44,12 +46,7 @@ public class CourseController {
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
-//	@PreAuthorize("hasRole('INSTRUCTOR')")
-//	@PostMapping("/")
-//	public ResponseEntity<String> createCourse() {
-//	    System.out.println("HI");
-//	    return ResponseEntity.ok("Success");
-//	}
+
 	
 	@PreAuthorize("hasRole('STUDENT') or hasRole('INSTRUCTOR')")
 //	@PreAuthorize("hasAnyRole('STUDENT', 'INSTRUCTOR', 'ADMIN')")
@@ -99,7 +96,17 @@ public class CourseController {
 	}
 	
 	
-	
+	@PatchMapping("/{courseId}/thumbnail")
+	@PreAuthorize("hasRole('INSTRUCTOR')")
+	public ResponseEntity<CourseResponse> updateThumbnail(
+	        @PathVariable Long courseId,
+	        @RequestParam("file") MultipartFile file) {
+
+	    CourseResponse response =
+	            courseService.updateThumbnail(courseId, file);
+
+	    return ResponseEntity.ok(response);
+	}
 	
 	
 }
